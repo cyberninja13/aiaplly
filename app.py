@@ -2,6 +2,7 @@ import streamlit as st
 from selenium import webdriver
 import undetected_chromedriver as uc
 import time
+import os
 
 # Title of the app
 st.title("LinkedIn Easy Apply Bot")
@@ -25,25 +26,22 @@ if st.button("Start Applying"):
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-
-        # Default path to Chrome for cloud-based setups
-        # This is typically where Chrome is installed in a cloud environment
-        chrome_executable_path = "/usr/bin/google-chrome-stable"  # Adjust if necessary for cloud environments
-
-        # Set the binary location explicitly in ChromeOptions
+        
+        # Specify the path to the Chrome browser executable (adjust based on your environment)
+        chrome_executable_path = "/usr/bin/google-chrome-stable"  # Change this if necessary
         options.binary_location = chrome_executable_path
 
         driver = None
         try:
-            # Initialize undetected_chromedriver with options
-            driver = uc.Chrome(options=options)  # uc.Chrome should auto-detect the correct driver
+            # Initialize undetected_chromedriver with options and executable path
+            driver = uc.Chrome(options=options, driver_executable_path="/usr/local/bin/chromedriver")  # Specify path to chromedriver if needed
             st.success("WebDriver successfully initialized!")
 
             # Navigate to LinkedIn Jobs Page
             driver.get(linkedin_jobs_url)
             time.sleep(3)  # Wait for the page to load
 
-            # Find Easy Apply Buttons
+            # Example: Find Easy Apply Buttons
             easy_apply_buttons = driver.find_elements("class name", "jobs-apply-button")
             st.write(f"Found {len(easy_apply_buttons)} jobs with Easy Apply!")
 
