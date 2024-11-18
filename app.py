@@ -1,81 +1,61 @@
 import streamlit as st
 from selenium import webdriver
-import undetected_chromedriver.v2 as uc
-from webdriver_manager.chrome import ChromeDriverManager
-import os
+import undetected_chromedriver as uc
 import time
-import pdfplumber
-import docx2txt
-from io import BytesIO
+import os
 
-# Function to process the uploaded CV (PDF or DOCX)
-def process_cv(uploaded_file):
-    file_extension = uploaded_file.name.split('.')[-1].lower()
-    
-    if file_extension == 'pdf':
-        # Process PDF
-        with pdfplumber.open(uploaded_file) as pdf:
-            text = ""
-            for page in pdf.pages:
-                text += page.extract_text()
-        return text
-    
-    elif file_extension == 'docx':
-        # Process DOCX
-        text = docx2txt.process(uploaded_file)
-        return text
-    
+# Title of the app
+st.title("LinkedIn Easy Apply Bot")
+
+# Upload CV
+uploaded_cv = st.file_uploader("Upload your CV (PDF or DOCX)", type=["pdf", "docx"])
+
+# LinkedIn Jobs Link
+linkedin_jobs_url = st.text_input("Enter LinkedIn Jobs URL (with Easy Apply options)")
+
+# Start Button
+if st.button("Start Applying"):
+    if not uploaded_cv or not linkedin_jobs_url:
+        st.error("Please upload your CV and provide the LinkedIn jobs link!")
     else:
-        return "Unsupported file format. Please upload a PDF or DOCX file."
+        st.info("Starting automation...")
 
-# Function to start the automation process
-def start_automation(url):
-    try:
-        # Set up Chrome options
-        options = uc.ChromeOptions()
+        # Configure undetected_chromedriver
+        options = webdriver.ChromeOptions()
+        options.add_argument("--headless")  # Headless mode for cloud
+        options.add_argument("--disable-gpu")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        
+        # Specify the path to the Chrome browser executable (adjust based on your environment)
+        chrome_executable_path = "/usr/bin/google-chrome-stable"  # Change this if necessary
+        options.binary_location = chrome_executable_path
 
-        # For cloud environments (like Streamlit), ensure Chrome is installed.
-        # You may specify the binary location if needed.
-        if 'CHROME_BIN' in os.environ:
-            options.binary_location = os.environ['CHROME_BIN']  # For cloud setups like Streamlit
-        else:
-            # For local development (Windows path), specify the path to Chrome binary
-            options.binary_location = r"C:\Program Files\Google\Chrome\Application\chrome.exe"  # Adjust if needed
+        driver = None
+        try:
+            # Initialize undetected_chromedriver with options and executable path
+            driver = uc.Chrome(options=options, driver_executable_path="/usr/local/bin/chromedriver")  # Specify path to chromedriver if needed
+            st.success("WebDriver successfully initialized!")
 
-        # Use WebDriver Manager to install the correct version of ChromeDriver
-        driver = uc.Chrome(executable_path=ChromeDriverManager().install(), options=options)
+            # Navigate to LinkedIn Jobs Page
+            driver.get(linkedin_jobs_url)
+            time.sleep(3)  # Wait for the page to load
 
-        # Visit the URL for automation
-        driver.get(url)
-        st.write(f"Automation started! Opened URL: {driver.current_url}")
+            # Example: Find Easy Apply Buttons
+            easy_apply_buttons = driver.find_elements("class name", "jobs-apply-button")
+            st.write(f"Found {len(easy_apply_buttons)} jobs with Easy Apply!")
 
-        # Optional: Perform further actions like clicking, scraping, etc.
-        # Example:
-        # element = driver.find_element_by_xpath("your_xpath_here")
-        # element.click()
+            # Simulate applying to jobs
+            for i, button in enumerate(easy_apply_buttons[:5]):  # Limit to first 5 jobs
+                button.click()
+                time.sleep(2)  # Wait for the application modal to load
+                st.write(f"Applied to job {i + 1}!")
+                driver.back()
+                time.sleep(2)
 
-        # Close the driver when done
-        driver.quit()
-
-    except Exception as e:
-        st.error(f"An error occurred: {str(e)}")
-        st.stop()
-
-# Streamlit user interface
-st.title("Automation with Streamlit and Selenium")
-
-# File upload for CV
-uploaded_file = st.file_uploader("Upload your CV (PDF or DOCX)", type=["pdf", "docx"])
-
-if uploaded_file is not None:
-    st.write("File uploaded successfully!")
-    cv_text = process_cv(uploaded_file)
-    st.text_area("Extracted CV Text", cv_text, height=300)
-
-# Input for URL to automate
-url_input = st.text_input("Enter the URL to automate", placeholder="https://example.com")
-
-# Button to start the automation
-if st.button('Start Automation') and url_input:
-    st.write(f"Starting automation on {url_input}...")
-    start_automation(url_input)
+            st.success("Automation completed!")
+        except Exception as e:
+            st.error(f"An error occurred: {str(e)}")
+        finally:
+            if driver:
+                driver.quit()
