@@ -1,56 +1,57 @@
 import streamlit as st
-import pandas as pd
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 
-# Streamlit Interface
-st.title("LinkedIn Easy Apply Automation")
-st.write("Upload your CV and let the AI help you apply for 'Easy Apply' jobs!")
+# Title of the app
+st.title("LinkedIn Easy Apply Bot")
 
-# File Upload
-uploaded_file = st.file_uploader("Upload your CV (PDF/DOCX)", type=["pdf", "docx"])
+# Upload CV
+uploaded_cv = st.file_uploader("Upload your CV (PDF or DOCX)", type=["pdf", "docx"])
 
-if uploaded_file:
-    st.success("CV uploaded successfully!")
+# LinkedIn Jobs Link
+linkedin_jobs_url = st.text_input("Enter LinkedIn Jobs URL (with Easy Apply options)")
 
-    # Dummy Processing (e.g., Parsing CV or extracting text)
-    st.write("Processing your CV...")
-    # TODO: Add CV parsing logic here
-    
-    # LinkedIn Jobs Link
-    linkedin_url = st.text_input("Paste LinkedIn Jobs URL (with 'Easy Apply'):")
+# Start Button
+if st.button("Start Applying"):
+    if not uploaded_cv or not linkedin_jobs_url:
+        st.error("Please upload your CV and provide the LinkedIn jobs link!")
+    else:
+        st.info("Starting automation...")
 
-    if linkedin_url and st.button("Start Applying"):
-        st.write("Starting automation...")
-        
-        # Automation Logic
+        # Configure Selenium WebDriver
+        options = webdriver.ChromeOptions()
+        options.add_argument('--headless')  # Headless mode for cloud deployment
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+
+        # Start WebDriver
         try:
-            # Set up Selenium WebDriver
-            driver = webdriver.Chrome()  # Ensure you have the correct driver installed
-            driver.get(linkedin_url)
-
-            # Example: Login to LinkedIn (replace with your credentials for testing)
-            st.write("Logging in to LinkedIn...")
-            driver.find_element(By.ID, "session_key").send_keys("your_email@example.com")
-            driver.find_element(By.ID, "session_password").send_keys("your_password")
-            driver.find_element(By.CLASS_NAME, "sign-in-form__submit-button").click()
-
-            # Apply to Jobs
-            time.sleep(5)  # Wait for page to load
-            jobs = driver.find_elements(By.CLASS_NAME, "job-card-container__link")
-            for job in jobs:
-                job.click()
-                time.sleep(2)
-                try:
-                    apply_button = driver.find_element(By.CLASS_NAME, "jobs-apply-button")
-                    apply_button.click()
-                    st.write("Applied to a job!")
-                except:
-                    st.write("Skipped a job (No Easy Apply).")
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+            st.success("WebDriver successfully initialized!")
             
-            driver.quit()
-            st.success("All applicable jobs have been processed!")
+            # Navigate to LinkedIn Jobs Page
+            driver.get(linkedin_jobs_url)
+            time.sleep(3)  # Wait for page to load
+            
+            # Example: Find Easy Apply Buttons
+            easy_apply_buttons = driver.find_elements(By.CLASS_NAME, "jobs-apply-button")
+            st.write(f"Found {len(easy_apply_buttons)} jobs with Easy Apply!")
+
+            # Simulate applying to jobs (this is just a placeholder logic)
+            for i, button in enumerate(easy_apply_buttons[:5]):  # Limit to first 5 jobs
+                button.click()
+                time.sleep(2)  # Wait for the application modal to load
+                st.write(f"Applied to job {i + 1}!")
+                # Add more detailed logic here if needed
+                driver.back()
+                time.sleep(2)
+
+            st.success("Automation completed!")
         except Exception as e:
-            st.error(f"Error: {e}")
+            st.error(f"An error occurred: {str(e)}")
+        finally:
+            driver.quit()
