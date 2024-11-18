@@ -24,24 +24,29 @@ if st.button("Start Applying"):
 
         # Configure Selenium WebDriver
         options = webdriver.ChromeOptions()
-        options.add_argument('--headless')  # Headless mode for cloud deployment
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument("--headless")  # Run in headless mode for cloud
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--remote-debugging-port=9222")
 
-        # Start WebDriver
+        driver = None
         try:
-            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+            # Dynamically fetch and use the latest ChromeDriver
+            service = Service(ChromeDriverManager().install())
+            driver = webdriver.Chrome(service=service, options=options)
+
             st.success("WebDriver successfully initialized!")
-            
+
             # Navigate to LinkedIn Jobs Page
             driver.get(linkedin_jobs_url)
-            time.sleep(3)  # Wait for page to load
-            
+            time.sleep(3)  # Wait for the page to load
+
             # Example: Find Easy Apply Buttons
             easy_apply_buttons = driver.find_elements(By.CLASS_NAME, "jobs-apply-button")
             st.write(f"Found {len(easy_apply_buttons)} jobs with Easy Apply!")
 
-            # Simulate applying to jobs (this is just a placeholder logic)
+            # Simulate applying to jobs (this is just placeholder logic)
             for i, button in enumerate(easy_apply_buttons[:5]):  # Limit to first 5 jobs
                 button.click()
                 time.sleep(2)  # Wait for the application modal to load
@@ -54,4 +59,5 @@ if st.button("Start Applying"):
         except Exception as e:
             st.error(f"An error occurred: {str(e)}")
         finally:
-            driver.quit()
+            if driver:
+                driver.quit()  # Ensure WebDriver quits even on errors
