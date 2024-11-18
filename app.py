@@ -33,8 +33,8 @@ if st.button("Start Applying"):
 
         driver = None
         try:
-            # Initialize undetected_chromedriver with options and executable path
-            driver = uc.Chrome(options=options, driver_executable_path="/usr/local/bin/chromedriver")  # Specify path to chromedriver if needed
+            # Initialize undetected_chromedriver with options (no need to specify chromedriver path)
+            driver = uc.Chrome(options=options)  # Auto-downloads chromedriver if necessary
             st.success("WebDriver successfully initialized!")
 
             # Navigate to LinkedIn Jobs Page
