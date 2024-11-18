@@ -1,0 +1,8 @@
+streamlit==1.15.0
+pandas
+openpyxl
+streamlit
+selenium
+beautifulsoup4
+pdfplumber
+docx2txt
