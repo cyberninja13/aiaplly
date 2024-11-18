@@ -6,3 +6,4 @@ beautifulsoup4>=4.12.0
 pdfplumber>=0.11.0
 docx2txt>=0.8
 altair>=5.0
+webdriver-manager
