@@ -28,7 +28,7 @@ if st.button("Start Applying"):
         options.add_argument("--disable-dev-shm-usage")
 
         # Automatically download and use the correct chromedriver
-        chromedriver_path = ChromeDriverManager(version="120.0.6099.224").install()  # Specify version 120
+        chromedriver_path = ChromeDriverManager().install()  # Automatically fetch the correct version
 
         driver = None
         try:
