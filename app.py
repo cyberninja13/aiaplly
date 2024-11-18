@@ -27,13 +27,14 @@ if st.button("Start Applying"):
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         
-        # Ensure Chrome binary is located correctly (for cloud environments)
-        options.binary_location = "/usr/bin/google-chrome-stable"  # Adjust this path if needed
+        # Specify the path to the Chrome browser executable (adjust based on your environment)
+        chrome_executable_path = "/usr/bin/google-chrome-stable"  # Change this if necessary
+        options.binary_location = chrome_executable_path
 
         driver = None
         try:
-            # Initialize undetected_chromedriver with options
-            driver = uc.Chrome(options=options)
+            # Initialize undetected_chromedriver with options and executable path
+            driver = uc.Chrome(options=options, driver_executable_path="/usr/local/bin/chromedriver")  # Specify path to chromedriver if needed
             st.success("WebDriver successfully initialized!")
 
             # Navigate to LinkedIn Jobs Page
