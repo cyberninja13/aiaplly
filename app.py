@@ -57,4 +57,7 @@ if st.button("Start Applying"):
 
             st.success("Automation completed!")
         except Exception as e:
-            st.error
+            st.error(f"An error occurred: {str(e)}")
+        finally:
+            if driver:
+                driver.quit()
