@@ -21,19 +21,22 @@ if st.button("Start Applying"):
 
         # Configure undetected_chromedriver
         options = webdriver.ChromeOptions()
-        options.add_argument("--headless")  # Headless mode for cloud (remove this if using GUI locally)
+        options.add_argument("--headless")  # Headless mode for cloud
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
 
-        # Specify the path to the Chrome browser executable (Windows default path)
-        chrome_executable_path = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"  # Adjust this for your environment
-        options.binary_location = chrome_executable_path  # This line sets the binary location
+        # Default path to Chrome for cloud-based setups
+        # This is typically where Chrome is installed in a cloud environment
+        chrome_executable_path = "/usr/bin/google-chrome-stable"  # Adjust if necessary for cloud environments
+
+        # Set the binary location explicitly in ChromeOptions
+        options.binary_location = chrome_executable_path
 
         driver = None
         try:
             # Initialize undetected_chromedriver with options
-            driver = uc.Chrome(options=options)  # Driver path is managed automatically by undetected_chromedriver
+            driver = uc.Chrome(options=options)  # uc.Chrome should auto-detect the correct driver
             st.success("WebDriver successfully initialized!")
 
             # Navigate to LinkedIn Jobs Page
@@ -54,7 +57,4 @@ if st.button("Start Applying"):
 
             st.success("Automation completed!")
         except Exception as e:
-            st.error(f"An error occurred: {str(e)}")
-        finally:
-            if driver:
-                driver.quit()
+            st.error
