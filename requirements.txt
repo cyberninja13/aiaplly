@@ -6,3 +6,5 @@ selenium
 beautifulsoup4
 pdfplumber
 docx2txt
+altair>=4.2.2
+freeze
