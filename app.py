@@ -26,8 +26,8 @@ if st.button("Start Applying"):
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
 
-        # Specify the path to the Chrome binary (adjust for your environment)
-        chrome_executable_path = "/usr/bin/google-chrome-stable"  # Use correct path for your system
+        # Specify the path to the Chrome browser executable (Windows default path)
+        chrome_executable_path = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"  # Adjust this for your environment
         options.binary_location = chrome_executable_path  # This line sets the binary location
 
         driver = None
