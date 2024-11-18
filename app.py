@@ -2,6 +2,7 @@ import streamlit as st
 from selenium import webdriver
 import undetected_chromedriver as uc
 import time
+import os
 
 # Title of the app
 st.title("LinkedIn Easy Apply Bot")
@@ -25,10 +26,13 @@ if st.button("Start Applying"):
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
+        
+        # Ensure Chrome binary is located correctly (for cloud environments)
+        options.binary_location = "/usr/bin/google-chrome-stable"  # Adjust this path if needed
 
         driver = None
         try:
-            # Initialize undetected_chromedriver
+            # Initialize undetected_chromedriver with options
             driver = uc.Chrome(options=options)
             st.success("WebDriver successfully initialized!")
 
