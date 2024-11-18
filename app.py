@@ -22,19 +22,19 @@ if st.button("Start Applying"):
 
         # Configure undetected_chromedriver
         options = webdriver.ChromeOptions()
-        options.add_argument("--headless")  # Headless mode for cloud
+        options.add_argument("--headless")  # Headless mode for cloud (you can remove this if running locally)
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        
-        # Specify the path to the Chrome browser executable (adjust based on your environment)
-        chrome_executable_path = "/usr/bin/google-chrome-stable"  # Change this if necessary
-        options.binary_location = chrome_executable_path
+
+        # Connect to running Chrome instance with remote debugging
+        options.add_argument('--remote-debugging-port=9222')
+        options.add_argument('--user-data-dir=/path/to/your/chrome/user/data')  # Make sure to specify the correct path to your Chrome user data
 
         driver = None
         try:
-            # Initialize undetected_chromedriver with options (no need to specify chromedriver path)
-            driver = uc.Chrome(options=options)  # Auto-downloads chromedriver if necessary
+            # Initialize undetected_chromedriver with options (it will connect to the remote instance)
+            driver = uc.Chrome(options=options)  # No need to specify chromedriver path here
             st.success("WebDriver successfully initialized!")
 
             # Navigate to LinkedIn Jobs Page
