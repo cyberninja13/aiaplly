@@ -2,7 +2,6 @@ import streamlit as st
 from selenium import webdriver
 import undetected_chromedriver as uc
 import time
-import os
 
 # Title of the app
 st.title("LinkedIn Easy Apply Bot")
@@ -22,26 +21,26 @@ if st.button("Start Applying"):
 
         # Configure undetected_chromedriver
         options = webdriver.ChromeOptions()
-        options.add_argument("--headless")  # Headless mode for cloud (you can remove this if running locally)
+        options.add_argument("--headless")  # Headless mode for cloud (remove this if using GUI locally)
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
 
-        # Connect to running Chrome instance with remote debugging
-        options.add_argument('--remote-debugging-port=9222')
-        options.add_argument('--user-data-dir=/path/to/your/chrome/user/data')  # Make sure to specify the correct path to your Chrome user data
+        # Specify the path to the Chrome binary (adjust for your environment)
+        chrome_executable_path = "/usr/bin/google-chrome-stable"  # Use correct path for your system
+        options.binary_location = chrome_executable_path  # This line sets the binary location
 
         driver = None
         try:
-            # Initialize undetected_chromedriver with options (it will connect to the remote instance)
-            driver = uc.Chrome(options=options)  # No need to specify chromedriver path here
+            # Initialize undetected_chromedriver with options
+            driver = uc.Chrome(options=options)  # Driver path is managed automatically by undetected_chromedriver
             st.success("WebDriver successfully initialized!")
 
             # Navigate to LinkedIn Jobs Page
             driver.get(linkedin_jobs_url)
             time.sleep(3)  # Wait for the page to load
 
-            # Example: Find Easy Apply Buttons
+            # Find Easy Apply Buttons
             easy_apply_buttons = driver.find_elements("class name", "jobs-apply-button")
             st.write(f"Found {len(easy_apply_buttons)} jobs with Easy Apply!")
 
