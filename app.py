@@ -1,8 +1,8 @@
 import streamlit as st
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 import time
 import os
 
@@ -39,13 +39,12 @@ if st.button("Start Applying"):
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
 
-        # Automatically detect and install the compatible ChromeDriver
-        chromedriver_path = ChromeDriverManager().install()
-
-        # Initialize WebDriver
+        # Initialize WebDriver with Service
+        service = Service(ChromeDriverManager().install())
         driver = None
+
         try:
-            driver = webdriver.Chrome(executable_path=chromedriver_path, options=options)
+            driver = webdriver.Chrome(service=service, options=options)
             st.success("WebDriver successfully initialized!")
 
             # Navigate to Workable Jobs Page
@@ -71,7 +70,11 @@ if st.button("Start Applying"):
                     driver.find_element(By.NAME, "headline").send_keys(headline)
                     driver.find_element(By.NAME, "phone").send_keys(phone)
                     driver.find_element(By.NAME, "address").send_keys(address)
-                    driver.find_element(By.NAME, "resume").send_keys(os.path.abspath(uploaded_cv.name))  # Upload CV
+
+                    # Upload Resume
+                    cv_path = os.path.abspath(uploaded_cv.name)
+                    driver.find_element(By.NAME, "resume").send_keys(cv_path)
+
                     driver.find_element(By.NAME, "current_salary").send_keys(current_salary)
                     driver.find_element(By.NAME, "notice_period").send_keys(notice_period)
 
